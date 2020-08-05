@@ -90,7 +90,7 @@ def check_page_number():  # 找最後一頁的頁數
     return pn
 
 
-def web_crawler():  # 爬標題
+def web_crawler_for_BBCNews_headlines():  # 爬標題
     i = 1
     while 1:
         res = requests.get(url_1 + name + url_2 + str(i))
