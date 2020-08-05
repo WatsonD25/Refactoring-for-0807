@@ -1,33 +1,40 @@
-#爬蟲
+#################### 爬蟲 ####################
 from bs4 import BeautifulSoup 
 import re
 import requests
-#繪圖
+
+#################### 畫圖 ####################
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import MultipleLocator #用在y軸座標
 from matplotlib import animation as animation #animation
+
+#################### 資料整理 ####################
+import numpy as np
 import copy
+
+#################### 文字處理 ####################
 import nltk 
 from nltk.corpus import stopwords 
 nltk.download('punkt') 
 nltk.download("stopwords") 
 from nltk.tokenize import word_tokenize 
-import numpy as np
 
-font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  # 中文字體匯入
-#mode1各別主題每小時出現的新聞數量，_1代表英文版，_2代表中文版
+#################### 中文字體匯入 ####################
+font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  
+
+#################### mode1各別主題每小時出現的新聞數量，_1代表英文版，_2代表中文版 ####################
 mode1_Dictionary = { 'time' : ['07/21','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','07/22,00:00','01:00','02:00','03:00',
                     '04:00','05:00','06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00'],
                     'taiwan_1' : [44,48,74,25,24,37,55,58,54,58,52,56,64,52,62,52,47,55,48,73,45,46,59,68,56],
                     'taiwan_2' : [57,59,71,58,58,54,47,50,35,23,28,21,23,16,54,63,28,50,50,56,52,64,64,59,50],
                     'covid19_1' : [55,100,87,80,94,100,100,76,81,93,81,82,74,92,100,87,91,100,81,81,88,90,100,82,80],
                     'covid19_2' : [44,66,64,46,56,52,63,52,53,34,51,38,44,35,49,47,50,45,55,51,53,56,66,54,56],
-                    'china_1' : [30,70,68,29,48,76,84,59,46,28,37,48,37,56,42,49,51,44,62,63,41,77,67,57,70]
+                    'china_1' : [30,70,68,29,48,76,84,59,46,28,37,48,37,56,42,49,51,44,62,63,41,77,67,57,70],
                     'china_2' : [61,78,79,71,80,79,63,68,52,34,34,55,61,33,81,70,43,60,74,75,68,68,63,61,74],
                     'coronavirus_1' : [61,45,86,78,63,87,66,89,71,66,65,75,56,94,52,69,81,73,79,52,65,46,62,55,88],
                     'coronavirus_2' : [23,26,33,39,28,28,25,25,31,12,20,14,34,7,22,37,17,27,28,27,19,31,33,21,34],
-                    'trump_1' : [21,39,32,38,29,44,45,39,32,41,38,28,30,32,28,28,24,27,27,27,40,28,22,14,36]
+                    'trump_1' : [21,39,32,38,29,44,45,39,32,41,38,28,30,32,28,28,24,27,27,27,40,28,22,14,36],
                     'trump_2' : [18,16,15,14,13,16,8,12,12,3,9,1,1,8,11,10,10,16,23,19,15,19,12,21,16],
                     'uk_1' : [33,84,52,29,42,91,60,41,47,91,34,74,41,72,75,62,50,25,51,24,76,81,85,75,73],
                     'uk_2' : [35,44,42,31,38,39,33,27,24,14,15,22,26,14,41,25,17,43,55,47,39,39,39,34,39],
@@ -39,6 +46,24 @@ mode1_Dictionary = { 'time' : ['07/21','16:00','17:00','18:00','19:00','20:00','
                     'eu_2' : [16,23,16,18,13,16,8,15,13,6,7,21,12,8,23,12,16,29,28,22,19,24,16,16,15],
                     'tesla_1' : [13,45,48,25,22,26,19,34,25,15,14,26,10,22,18,23,12,9,11,13,20,10,10,13,25],     
                     'tesla_2' : [12,23,17,19,13,10,16,17,20,11,13,11,7,5,15,17,21,29,29,23,22,16,16,9,14]}
+
+#################### mode1畫圖 ####################
+def mode1_plot(plt, topic):  
+    x=mode1_Dictionary['time']                   #把x設定為時間
+    y1=mode1_Dictionary['%s_1'%topic]            #把y1設定為英文版
+    y2=mode1_Dictionary['%s_2'%topic]            #把y2設定為中文版
+    plt.style.use('bmh')
+    y_major_locator = MultipleLocator(10)        #把y軸的刻度間隔設置為10 存在變數裡
+    ax=plt.gca()                                 #ax為座標軸的實例
+    ax.yaxis.set_major_locator(y_major_locator)  #把y軸的主刻度設置為10的倍數
+    plt.xticks(rotation=80)                      #把x軸刻度名稱旋轉
+    plt.xlim(0,24)                               #固定x軸刻度
+    plt.ylim(0,104)                              #固定y軸刻度
+    plt.xlabel('Time')                           #設置x軸名稱
+    plt.ylabel('number of news')                 #設置y軸名稱
+    plt.plot(x, y1, '-o', color='b')             #_1為英文版，線為藍色
+    plt.plot(x, y2, '-o', color='r')             #_2為中文版，線為紅色
+
 
 def chinese_hour(url):  # 爬標題
     r = requests.get(url)
@@ -105,30 +130,7 @@ def web_crawler():  # 爬標題
         i = i + 1
 
 
-def plotdata(plt, data):  # 模式1畫圖-1
-    plt.style.use('bmh')
-    y_major_locator = MultipleLocator(10)#把y軸的刻度間隔設置為10 存在變數裡
-    ax=plt.gca() #ax為座標軸的實例
-    ax.yaxis.set_major_locator(y_major_locator) #把y軸的主刻度設置為10的倍數
-    plt.ylim(0,110)
-    plt.xticks(rotation=80)
-    plt.xlim(0,24)
-    plt.ylim(0,104)
-    plt.xlabel('Time')
-    plt.ylabel('number of news')
-    plt.plot(x, y, '-o', color='b')
 
-def plotdata1(plt, data):  # 模式1畫圖-2
-    plt.style.use('bmh')
-    y_major_locator = MultipleLocator(10)#把y軸的刻度間隔設置為10 存在變數裡
-    ax=plt.gca() #ax為座標軸的實例
-    ax.yaxis.set_major_locator(y_major_locator) #把y軸的主刻度設置為10的倍數
-    plt.ylim(0,110)
-    plt.xlim(0,24)
-    plt.ylim(0,104)
-    plt.xlabel('Time')
-    plt.ylabel('number of news')
-    plt.plot(x, y, '-o', color='r')
 
 while True:  # 防呆&確認模式
     print('1. 觀看國內與國外對於相同主題的新聞數量差異')
@@ -147,8 +149,7 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
     if m == 1:
         print('歡迎進入模式1：觀看國內與國外對於相同主題的新聞數量差異\n')
         while True:
-            print(
-                '主題: 1.Taiwan, 2.Covid-19, 3.China, 4.Corona virus, 5.Donald Trump, 6.UK, 7.Hong Kong, 8.Election, 9.EU, 10.Tesla')
+            print('主題: 1.Taiwan, 2.Covid-19, 3.China, 4.Corona virus, 5.Donald Trump, 6.UK, 7.Hong Kong, 8.Election, 9.EU, 10.Tesla')
             topic = eval(input('請根據以上10個主題代碼，選擇一個你想觀看的主題：'))
             if topic == 1:
                 # Taiwan
