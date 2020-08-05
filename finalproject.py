@@ -4,11 +4,11 @@ import requests
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 import copy
-import nltk #new
-from nltk.corpus import stopwords #new , need: pip install nltk
-nltk.download('punkt') #new
-nltk.download("stopwords") #new
-from nltk.tokenize import word_tokenize #new
+import nltk 
+from nltk.corpus import stopwords 
+nltk.download('punkt') 
+nltk.download("stopwords") 
+from nltk.tokenize import word_tokenize 
 from matplotlib import animation as animation #animation
 import numpy as np
 
