@@ -37,6 +37,17 @@ mode1_Dictionary = { 'time' : ['07/21','16:00','17:00','18:00','19:00','20:00','
                     'eu_2' : [16,23,16,18,13,16,8,15,13,6,7,21,12,8,23,12,16,29,28,22,19,24,16,16,15],
                     'tesla_1' : [13,45,48,25,22,26,19,34,25,15,14,26,10,22,18,23,12,9,11,13,20,10,10,13,25],     
                     'tesla_2' : [12,23,17,19,13,10,16,17,20,11,13,11,7,5,15,17,21,29,29,23,22,16,16,9,14]}
+                    
+def drawbar(news_type,news_num):
+    x_axis_label = news_type  # x軸標籤
+    y_axis_num = np.array(news_num)  # y軸數據
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.xlabel('種類', fontproperties=font, size=12)
+    plt.ylabel('新聞量', fontproperties=font, size=12)
+    plt.title('新聞量分析圖', fontproperties=font, size=14)
+    plt.bar(x=x_axis_label, height=y_axis_num,color='#084887',edgecolor="#FAB419",linewidth=2)
+    plt.show()
 
 def chinese_hour(url):  # 爬標題
     r = requests.get(url)
@@ -66,18 +77,7 @@ def new_rank():  # 排名
             if (taiwan[i] == a[j]) and (taiwan[i] not in label):
                 label.append(labels[j])
                 rank.append(j + 1)
-    taiwan_lab = label  # x軸標籤
-    lab_num = np.array(taiwan)  # y軸數據
-    plt.xlabel('種類', fontproperties=font, size=12)
-    plt.ylabel('新聞量', fontproperties=font, size=12)
-    plt.title('新聞量分析圖', fontproperties=font, size=14)
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.bar(x=taiwan_lab, height=lab_num,
-            color='#084887',
-            edgecolor="#FAB419",
-            linewidth=2)
-    plt.show()
+    drawbar(label,taiwan)
     return taiwan, label, rank
 
 
