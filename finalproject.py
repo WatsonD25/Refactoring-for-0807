@@ -3,6 +3,7 @@ import re
 import requests
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
+from matplotlib.pyplot import MultipleLocator #用在y軸座標
 import copy
 import nltk 
 from nltk.corpus import stopwords 
