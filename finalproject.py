@@ -81,7 +81,7 @@ def new_rank():  # 排名
     return taiwan, label, rank
 
 
-def check_page_number():  # 找最後一頁的頁數
+def find_end_page_number():  # 找最後一頁的頁數
     res = requests.get(url_1 + name + url_2 + "1")
     soup = BeautifulSoup(res.text, 'html.parser')
     for entry in soup.select(
