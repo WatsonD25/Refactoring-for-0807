@@ -17,7 +17,7 @@ font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  # 中文字體匯�
 
 def chinese_hour(url):  # 爬標題
     r = requests.get(url)
-    if r.status_code == requests.codes:
+    if r.status_code == requests.codes.ok:
         soup = BeautifulSoup(r.text, 'html.parser')
         stories = soup.find_all('a', class_='DY5T1d')
     return len(stories)
@@ -472,7 +472,7 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
             word = word_tokenize(entry)
             for i in word:
                 dataset.append(i)
-                
+
         #移除stopwords
         my_stopwords = stopwords.words('english')
         newly_added_stopwords=["-",'?',':',',',"'s",".","!",";","/","'","What","The","&","How"]
