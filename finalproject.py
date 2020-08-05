@@ -1,16 +1,18 @@
+#爬蟲
 from bs4 import BeautifulSoup 
 import re
 import requests
+#繪圖
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import MultipleLocator #用在y軸座標
+from matplotlib import animation as animation #animation
 import copy
 import nltk 
 from nltk.corpus import stopwords 
 nltk.download('punkt') 
 nltk.download("stopwords") 
 from nltk.tokenize import word_tokenize 
-from matplotlib import animation as animation #animation
 import numpy as np
 
 font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  # 中文字體匯入
