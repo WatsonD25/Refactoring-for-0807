@@ -472,21 +472,13 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
             word = word_tokenize(entry)
             for i in word:
                 dataset.append(i)
+                
+        #移除stopwords
         my_stopwords = stopwords.words('english')
-        my_stopwords.append("-")
-        my_stopwords.append('?')
-        my_stopwords.append(':')
-        my_stopwords.append(',')
-        my_stopwords.append("'s")
-        my_stopwords.append(".")
-        my_stopwords.append("!")
-        my_stopwords.append(";")
-        my_stopwords.append("/")
-        my_stopwords.append("'")
-        my_stopwords.append("What")
-        my_stopwords.append("The")
-        my_stopwords.append("&")
-        my_stopwords.append("How")
+        newly_added_stopwords=["-",'?',':',',',"'s",".","!",";","/","'","What","The","&","How"]
+        for each_element in newly_added_stopwords:
+            my_stopwords.append(each_elemnet)
+
         dataset_clean = [word for word in dataset if not word in my_stopwords]
         #print(dataset_clean)
         # 計算字出現頻率
