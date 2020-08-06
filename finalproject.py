@@ -1,6 +1,5 @@
 #################### 爬蟲 ####################
 from bs4 import BeautifulSoup 
-import re
 import requests
 
 #################### 畫圖 ####################
@@ -110,27 +109,27 @@ def web_crawler_for_GoogleNews_headlines(url):
     return len(stories)
 
 #################### mode2排名 ####################
-def new_rank():
+def GoogleNews_headlines_rank():
     # 順序為肺炎、香港、立法院、高雄市長補選、三倍券、體育、財經
-    twu = ['https://news.google.com/search?q=%E8%82%BA%E7%82%8E%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
+    url = ['https://news.google.com/search?q=%E8%82%BA%E7%82%8E%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E9%A6%99%E6%B8%AF%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E7%AB%8B%E6%B3%95%E9%99%A2%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E9%AB%98%E9%9B%84%E5%B8%82%E9%95%B7%E8%A3%9C%E9%81%B8%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E4%B8%89%E5%80%8D%E5%88%B8%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E9%AB%94%E8%82%B2%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E8%B2%A1%E7%B6%93%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant']
-    taiwan, label, rank = [], [], []
+    count, label, rank = [], [], []
     for i in range(7):
-        taiwan.append(web_crawler_for_GoogleNews_headlines(twu[i]))
-    a = copy.deepcopy(taiwan)
+        count.append(web_crawler_for_GoogleNews_headlines(url[i]))
+    count_copy = copy.deepcopy(count)
     labels = ['Covid-19', 'HK', 'legislature', 'election', 'voucher', 'PE', 'finance']
-    taiwan.sort(reverse=True)
-    for i in range(len(taiwan)):
+    count.sort(reverse=True)
+    for i in range(len(count)):
         for j in range(7):
-            if (taiwan[i] == a[j]) and (taiwan[i] not in label):
+            if (count[i] == count_copy[j]) and (count[i] not in label):
                 label.append(labels[j])
                 rank.append(j + 1)
-    return taiwan, label, rank
+    return count_copy, labels, rank
 
 #################### mode3找最後一頁的頁數 ####################
 def find_end_page_number(): 
@@ -204,7 +203,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
             choose = eval(input('請根據以上7個主題代碼，猜測一個你認為過去一小時內數量最多者：'))
             kind = [1, 2, 3, 4, 5, 6, 7]
             if choose in kind:
-                taiwan, label, rank = new_rank()
+                count, label, rank = GoogleNews_headlines_rank()
                 print('')
                 for i in range(7):
                     if choose == rank[i] and i == 0:
@@ -217,7 +216,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                         print('\n不優！沒事多看看新聞吧！Σ( ° △ °|||)\n')
                         break
                 draw_mode=0
-                draw_bar(label,taiwan,draw_mode)
+                draw_bar(label,count,draw_mode)
                 print("")
                 break
             else:
@@ -285,7 +284,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                     y_axis_num.append(list_dictionary[i][1])
                     i = i + 1
                 draw_mode=1
-                draw_bar(label,taiwan,draw_mode)
+                draw_bar(x_axis_type,y_axis_num,draw_mode)
             if mode == 2:
                 # 計算出現頻率前十高的單詞的標準化出現頻率
                 total = len(list_dictionary)
@@ -312,7 +311,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                     y_axis_num.append(standard_frequency[i])  # y軸數據
                 print(x_axis_type, y_axis_num)
                 draw_mode=2
-                draw_bar(label,taiwan,draw_mode)
+                draw_bar(x_axis_type,y_axis_num,draw_mode)
             if mode == 3:
                 # 計算任一單詞的標準化出現頻率
                 total = len(list_dictionary)
@@ -345,9 +344,10 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                 sf_specific = round((sf_specific - avg) / sd, 3)
                 print("出現頻率的標準化頻率:", sf_specific)
 
+            print("")
             Mode=choose_mode()
 
-            if mode in [1, 2, 3]:
+            if mode in [1, 2, 3] and Mode==3:
                 print("")
                 k = eval(input("替換關鍵字請輸入0,不需要則輸入其他任意數字:"))
                 if k == 0:
