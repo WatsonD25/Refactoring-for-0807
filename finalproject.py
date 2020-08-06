@@ -93,13 +93,14 @@ def find_end_page_number():  # 找最後一頁的頁數
     return page_number
 
 def web_crawler_for_BBCNews_headlines():  # 爬標題
+    headlines = []
     i = 1
     while 1:
         res = requests.get(url_1 + name + url_2 + str(i))
         res.encoding = "utf8"  # 解決標點符號亂碼問題
         soup = BeautifulSoup(res.text, 'html.parser')
         for entry in soup.select('.css-johpve-PromoLink.ett16tt7 span'):
-            list_1.append(entry.text.strip())
+            headlines.append(entry.text.strip())
         if i == end_page:
             break
         i = i + 1
@@ -417,13 +418,13 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
         url_2 = "&page="
 
         end_page = int(find_end_page_number())
-        list_1 = []
+
 
         web_crawler()  # 執行爬蟲
 
         # 從爬回來的所有標題提煉單字
         dataset = []
-        for entry in list_1:
+        for entry in headlines:
             word = word_tokenize(entry)
             for i in word:
                 dataset.append(i)
