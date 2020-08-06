@@ -24,15 +24,17 @@ from nltk.tokenize import word_tokenize
 font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')
 
  #################### 選模式 ####################
-def choose_mode(): 
-    print(' 1. 觀看國內與國外對於相同主題的新聞數量差異','\n','2. 猜測國內不同主題的新聞數量名次','\n',
-            '3. 分析新聞標題字詞出現程度','\n','-' * 100)
-    Mode = eval(input('請輸入想進入的模式:'))
-    if Mode == 1 or Mode == 2 or Mode == 3:
-        print('=' * 100, '\n')
-    else:
-        print('\n無此模式，請重新輸入')
-        print('=' * 100, '\n')
+def choose_mode():
+    while True: 
+        print(' 1. 觀看國內與國外對於相同主題的新聞數量差異','\n','2. 猜測國內不同主題的新聞數量名次','\n',
+                '3. 分析新聞標題字詞出現程度','\n','-' * 100)
+        Mode = eval(input('請輸入想進入的模式:'))
+        if Mode == 1 or Mode == 2 or Mode == 3:
+            print('=' * 100, '\n')
+            break
+        else:
+            print('\n無此模式，請重新輸入')
+            print('=' * 100, '\n')
     return Mode
 
 #################### mode1各別主題每小時出現的新聞數量，_1代表英文版，_2代表中文版 ####################
@@ -97,20 +99,8 @@ def mode1_animation(topic):
 
     plt.show()
 
-#################### mode2畫圖 ####################
-def drawbar(news_type,news_num): 
-    x_axis_label = news_type         # x軸標籤
-    y_axis_num = np.array(news_num)  # y軸數據
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.xlabel('種類', fontproperties=font, size=12)
-    plt.ylabel('新聞量', fontproperties=font, size=12)
-    plt.title('新聞量分析圖', fontproperties=font, size=14)
-    plt.bar(x=x_axis_label, height=y_axis_num,color='#084887',edgecolor="#FAB419",linewidth=2)
-    plt.show()
-
 #################### mode2爬標題 ####################
-def chinese_hour(url): 
+def web_crawler_for_GoogleNews_headlines(url): 
     r = requests.get(url)
     if r.status_code == requests.codes.ok:
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -129,7 +119,7 @@ def new_rank():
            'https://news.google.com/search?q=%E8%B2%A1%E7%B6%93%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant']
     taiwan, label, rank = [], [], []
     for i in range(7):
-        taiwan.append(chinese_hour(twu[i]))
+        taiwan.append(web_crawler_for_GoogleNews_headlines(twu[i]))
     a = copy.deepcopy(taiwan)
     labels = ['Covid-19', 'HK', 'legislature', 'election', 'voucher', 'PE', 'finance']
     taiwan.sort(reverse=True)
@@ -140,6 +130,18 @@ def new_rank():
                 rank.append(j + 1)
     drawbar(label,taiwan)
     return taiwan, label, rank
+
+#################### mode2畫圖 ####################
+def drawbar(news_type,news_num): 
+    x_axis_label = news_type         # x軸標籤
+    y_axis_num = np.array(news_num)  # y軸數據
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.xlabel('種類', fontproperties=font, size=12)
+    plt.ylabel('新聞量', fontproperties=font, size=12)
+    plt.title('新聞量分析圖', fontproperties=font, size=14)
+    plt.bar(x=x_axis_label, height=y_axis_num,color='#084887',edgecolor="#FAB419",linewidth=2)
+    plt.show()
 
 #################### mode3找最後一頁的頁數 ####################
 def find_end_page_number(): 
@@ -162,6 +164,19 @@ def web_crawler_for_BBCNews_headlines():
         if i == end_page:
             break
         i = i + 1
+    return headlines
+
+#################### mode3畫圖 ####################
+def draw_mode3_bar(news_type,news_num):  #畫圖
+            plt.xlabel('種類', fontproperties=font, size=12)
+            plt.ylabel('頻率', fontproperties=font, size=12)
+            plt.xticks(fontsize=6.5)
+            plt.yticks(fontsize=10)
+            plt.bar(x=news_type, height=news_num,
+                    color='#084887',
+                    edgecolor="#FAB419",
+                    linewidth=2)
+            plt.show()
 
 #################### 程式運行 ####################
 # 防呆&確認模式
@@ -172,6 +187,7 @@ while True:
 
 # 進入模式
 while Mode == 1 or Mode == 2 or Mode == 3:  
+    #################### mode1 ####################
     if Mode == 1:
         print('歡迎進入模式1：觀看國內與國外對於相同主題的新聞數量差異\n')
         while True:
@@ -180,16 +196,14 @@ while Mode == 1 or Mode == 2 or Mode == 3:
             topic_number = eval(input('請根據以上10個主題代碼，選擇一個你想觀看的主題：'))                    #讓使用者輸入想觀看的主題代碼
             if topic_number in range(1,11):             #確定輸入的主題代碼正確
                 mode1_animation(topic[topic_number-1])  #畫出動畫
+                print("")
                 break                                   #跳出迴圈，重新詢問使用者
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
         
-        Mode=eval(input("\n繼續觀看其他主題請輸入1, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字: ")) 
-        if Mode==1:
-            Mode==1      
-        else:
-            Mode=choose_mode()
+        Mode=choose_mode()
 
+    #################### mode2 ####################
     elif Mode == 2:
         print('歡迎進入模式2：猜測國內不同主題的新聞數量名次\n')
         while True:
@@ -210,16 +224,14 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                     elif choose == rank[i] and i < 7:
                         print('\n不優！沒事多看看新聞吧！Σ( ° △ °|||)\n')
                         break
+                print("")
                 break
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
 
-        Mode = eval(input('\n再挑戰一次輸入2, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-        if Mode==2:
-            Mode==2
-        else:
-            Mode=choose_mode()
+        Mode=choose_mode()
 
+    #################### mode3 ####################
     elif Mode == 3:
         print('歡迎進入模式3：分析新聞標題字詞出現程度')
         url_1 = "https://www.bbc.co.uk/search?q="
@@ -229,7 +241,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
         end_page = int(find_end_page_number())
 
         # 執行爬蟲
-        web_crawler_for_BBCNews_headlines()  
+        headlines = web_crawler_for_BBCNews_headlines()  
 
         # 從爬回來的所有標題提煉單字
         dataset = []
@@ -242,7 +254,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
         my_stopwords = stopwords.words('english')
         newly_added_stopwords=["-",'?',':',',',"'s",".","!",";","/","'","What","The","&","How"]
         for each_element in newly_added_stopwords:
-            my_stopwords.append(each_elemnet)
+            my_stopwords.append(each_element)
 
         dataset_clean = [word for word in dataset if not word in my_stopwords]
         #print(dataset_clean)
@@ -259,16 +271,6 @@ while Mode == 1 or Mode == 2 or Mode == 3:
         # 需要再恢復 print(list_dictionary)
         list_dictionary.sort(reverse=True, key=lambda list_dictionary: list_dictionary[1])
 
-        def draw_mode3_bar(news_type,news_num):  #畫圖
-            plt.xlabel('種類', fontproperties=font, size=12)
-            plt.ylabel('頻率', fontproperties=font, size=12)
-            plt.xticks(fontsize=6.5)
-            plt.yticks(fontsize=10)
-            plt.bar(x=news_type, height=news_num,
-                    color='#084887',
-                    edgecolor="#FAB419",
-                    linewidth=2)
-            plt.show()
         # 使用者輸入介面
         while 1:
             print("模式輸入", 1, "：觀看出現頻率大於等於輸入次數的單詞")
@@ -349,11 +351,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                 sf_specific = round((sf_specific - avg) / sd, 3)
                 print("出現頻率的標準化頻率:", sf_specific)
 
-            mode = eval(input('\n再一次請輸入3, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-            if Mode==3:
-                Mode==3
-            else:
-                Mode=choose_mode()
+            Mode=choose_mode()
 
             if mode == 3:
                 print("")
@@ -366,4 +364,3 @@ while Mode == 1 or Mode == 2 or Mode == 3:
             else:
                 print('=' * 100)
                 break
-     
