@@ -48,10 +48,10 @@ mode1_Dictionary = { 'time' : ['07/21','16:00','17:00','18:00','19:00','20:00','
                     'tesla_2' : [12,23,17,19,13,10,16,17,20,11,13,11,7,5,15,17,21,29,29,23,22,16,16,9,14]}
 
 #################### mode1畫圖 ####################
-def mode1_plot(plt, topic):  
-    x=mode1_Dictionary['time']                   #把x設定為時間
-    y1=mode1_Dictionary['%s_1'%topic]            #把y1設定為英文版
-    y2=mode1_Dictionary['%s_2'%topic]            #把y2設定為中文版
+def mode1_plot(plt, topic, i):  
+    x=mode1_Dictionary['time'][:i]               #把x設定為時間
+    y1=mode1_Dictionary['%s_1'%topic][:i]        #把y1設定為英文版
+    y2=mode1_Dictionary['%s_2'%topic][:i]        #把y2設定為中文版
     plt.style.use('bmh')
     y_major_locator = MultipleLocator(10)        #把y軸的刻度間隔設置為10 存在變數裡
     ax=plt.gca()                                 #ax為座標軸的實例
@@ -63,6 +63,27 @@ def mode1_plot(plt, topic):
     plt.ylabel('number of news')                 #設置y軸名稱
     plt.plot(x, y1, '-o', color='b')             #_1為英文版，線為藍色
     plt.plot(x, y2, '-o', color='r')             #_2為中文版，線為紅色
+
+#################### mode1動畫 ####################
+def mode1_animation(topic):
+    def animate(i): #update 
+        mode1_plot(plt,topic,i)
+        plt.legend(labels=['English Version','Chinese Version'],loc='best')
+        plt.title('%s'%topic)
+
+    def init(): #inition:空畫布
+        plt.legend(labels=['English Version','Chinese Version'],loc='best')
+        plt.title('%s'%topic)
+
+    fig, ax=plt.subplots()
+    ani=animation.FuncAnimation(fig=fig,    #動畫繪製的figure
+                           func=animate,    #自定義動畫函數
+                           frames=25,       #動畫長度
+                           init_func=init,  #自定義開始幀
+                           interval=250,    #更新頻率(以秒計)
+                           blit=False)      #更新所有點還是僅更新產生變化的點
+
+    plt.show()
 
 
 def chinese_hour(url):  # 爬標題
@@ -129,9 +150,6 @@ def web_crawler():  # 爬標題
             break
         i = i + 1
 
-
-
-
 while True:  # 防呆&確認模式
     print('1. 觀看國內與國外對於相同主題的新聞數量差異')
     print('2. 猜測國內不同主題的新聞數量名次')
@@ -150,226 +168,11 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
         print('歡迎進入模式1：觀看國內與國外對於相同主題的新聞數量差異\n')
         while True:
             print('主題: 1.Taiwan, 2.Covid-19, 3.China, 4.Corona virus, 5.Donald Trump, 6.UK, 7.Hong Kong, 8.Election, 9.EU, 10.Tesla')
-            topic = eval(input('請根據以上10個主題代碼，選擇一個你想觀看的主題：'))
-            if topic == 1:
-                # Taiwan
-                def animate(i):#update 
-                    plotdata(plt,taiwan_1[:i])
-                    plotdata1(plt,taiwan_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Taiwan')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Taiwan')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 2:
-                # covid19
-        
-                def animate(i):#update 
-                    plotdata(plt,covid19_1[:i])
-                    plotdata1(plt,covid19_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Covid-19')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Covid-19')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 3:
-                # china
-
-                def animate(i):#update 
-                    plotdata(plt,china_1[:i])
-                    plotdata1(plt,china_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('China')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('China')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 4:
-                # coronavirus
-            
-                def animate(i):#update 
-                    plotdata(plt,coronavirus_1[:i])
-                    plotdata1(plt,coronavirus_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Corona Virus')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Corona Virus')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 5:
-                # trump
-          
-                def animate(i):#update 
-                    plotdata(plt,trump_1[:i])
-                    plotdata1(plt,trump_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Donald Trump')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Donald Trump')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 6:
-                # uk
-         
-                def animate(i):#update 
-                    plotdata(plt,uk_1[:i])
-                    plotdata1(plt,uk_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('UK')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('UK')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 7:
-                # hk
-         
-                def animate(i):#update 
-                    plotdata(plt,hk_1[:i])
-                    plotdata1(plt,hk_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Hong Kong')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Hong Kong')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 8:
-                # election
-               
-                def animate(i):#update 
-                    plotdata(plt,election_1[:i])
-                    plotdata1(plt,election_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Election')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Election')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 9:
-                # eu
-                
-                def animate(i):#update 
-                    plotdata(plt,eu_1[:i])
-                    plotdata1(plt,eu_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('EU')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('EU')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
-
-            elif topic == 10:
-                # tesla
-                
-                
-                def animate(i):#update 
-                    plotdata(plt,tesla_1[:i])
-                    plotdata1(plt,tesla_2[:i])
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Tesla')
-
-                def init():#inition:空畫布
-                    plt.legend(labels=['English Version','Chinese Version'],loc='best')
-                    plt.title('Tesla')
-                    
-                ani=animation.FuncAnimation(fig=fig,  #動畫繪製的figure
-                           func=animate,              #自定義動畫函數
-                           frames=25,                 #動畫長度
-                           init_func=init,            #自定義開始幀
-                           interval=250,              #更新頻率(以秒計)
-                           blit=False)                #更新所有點還是僅更新產生變化的點
-                plt.show()
-                break
+            topic = ['taiwan','covid19','china','coronavirus','trump','uk','hk','election','eu','tesla']  #設定主題
+            topic_number = eval(input('請根據以上10個主題代碼，選擇一個你想觀看的主題：'))                    #讓使用者輸入想觀看的主題代碼
+            if topic_number in range(1,11):             #確定輸入的主題代碼正確
+                mode1_animation(topic[topic_number-1])  #畫出動畫
+                break                                   #跳出迴圈，重新詢問使用者
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
 
