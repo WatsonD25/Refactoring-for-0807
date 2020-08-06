@@ -129,23 +129,22 @@ def new_rank():  # 排名
     return taiwan, label, rank
 
 
-def check_page_number():  # 找最後一頁的頁數
+def find_end_page_number():  # 找最後一頁的頁數
     res = requests.get(url_1 + name + url_2 + "1")
     soup = BeautifulSoup(res.text, 'html.parser')
-    for entry in soup.select(
-            '.css-1s4ayab-StyledListItem-PageButtonListItem.e4i2y2x3 div .css-16didf7-StyledButtonContent.e1b2sq420'):
-        pn = str(entry.text.strip())
-    return pn
-
+    for entry in soup.select('.css-1s4ayab-StyledListItem-PageButtonListItem.e4i2y2x3 div .css-16didf7-StyledButtonContent.e1b2sq420'):
+        page_number = str(entry.text.strip()) #不斷將page_number替換掉，直到最後一頁(有些page number和最後一頁share同樣的tag和class name)
+    return page_number
 
 def web_crawler_for_BBCNews_headlines():  # 爬標題
+    headlines = []
     i = 1
     while 1:
         res = requests.get(url_1 + name + url_2 + str(i))
         res.encoding = "utf8"  # 解決標點符號亂碼問題
         soup = BeautifulSoup(res.text, 'html.parser')
         for entry in soup.select('.css-johpve-PromoLink.ett16tt7 span'):
-            list_1.append(entry.text.strip())
+            headlines.append(entry.text.strip())
         if i == end_page:
             break
         i = i + 1
@@ -220,14 +219,14 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
         name = input("請輸入關鍵字(如果超過一個字請用+號連接):")
         url_2 = "&page="
 
-        end_page = int(check_page_number())
-        list_1 = []
+        end_page = int(find_end_page_number())
+
 
         web_crawler()  # 執行爬蟲
 
         # 從爬回來的所有標題提煉單字
         dataset = []
-        for entry in list_1:
+        for entry in headlines:
             word = word_tokenize(entry)
             for i in word:
                 dataset.append(i)
@@ -365,4 +364,4 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
             else:
                 print('=' * 100)
                 break
-                
+     
