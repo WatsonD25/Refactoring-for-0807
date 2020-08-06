@@ -135,13 +135,13 @@ def GoogleNews_headlines_rank():
 def find_end_page_number(): 
     res = requests.get(url_1 + name + url_2 + "1")
     soup = BeautifulSoup(res.text, 'html.parser')
+    page_number = 0
     for entry in soup.select('.css-1s4ayab-StyledListItem-PageButtonListItem.e4i2y2x3 div .css-16didf7-StyledButtonContent.e1b2sq420'):
         page_number = str(entry.text.strip()) #不斷將page_number替換掉，直到最後一頁(有些page number和最後一頁share同樣的tag和class name)
     return page_number
 
 #################### mode3爬標題 ####################
-def web_crawler_for_BBCNews_headlines():
-    headlines = []
+def web_crawler_for_BBCNews_headlines(headlines):
     i = 1
     while 1:
         res = requests.get(url_1 + name + url_2 + str(i))
@@ -152,7 +152,47 @@ def web_crawler_for_BBCNews_headlines():
         if i == end_page:
             break
         i = i + 1
-    return headlines
+
+#################### mode3提取單詞 ####################
+def separate_word_in_headlines(all_separate_words):
+    for each in headlines:
+        word = word_tokenize(each)
+        for i in word:
+            all_separate_words.append(i)
+
+#################### mode3移除虛詞 ####################
+def remove_stopwords(all_separate_words):
+    my_stopwords = stopwords.words('english')
+    newly_added_stopwords=["-",'?',':',',',"'s",".","!",";","/","'","’","What","The","&","How"]
+    for each_element in newly_added_stopwords:
+        my_stopwords.append(each_element)
+    all_separate_words_clean = [word for word in all_separate_words if not word in my_stopwords]
+    return all_separate_words_clean
+
+#################### mode3依出現頻率排序 ####################
+def sort_with_frequency(list_dictionary,dictionary):
+    for i in dictionary:
+        e = (i, dictionary[i])
+        list_dictionary.append(e)
+    # print(list_dictionary) #for check
+    list_dictionary.sort(reverse=True, key=lambda list_dictionary: list_dictionary[1])
+    return list_dictionary
+
+#################### mode3計算標準化頻率 ####################
+def get_standard_frequency(list_dictionary,index_of_the_word):
+    total = len(list_dictionary)
+    frequency_total = 0
+    for i in range(total):
+        frequency_total = frequency_total + int(list_dictionary[i][1])
+    average = frequency_total / total
+    sum_sqr_dev = 0 # sum of squares of deviations
+    for i in range(total):
+        sum_sqr_dev = sum_sqr_dev + (list_dictionary[i][1] - average) ** 2
+    sd = (sum_sqr_dev / total) ** (0.5) # standard deviation
+    # 標準化頻率
+    index_of_the_word=int(index_of_the_word)
+    standard_frequency=round((list_dictionary[index_of_the_word][1] - average) / sd, 3)
+    return standard_frequency
 
 #################### mode2跟mode3畫圖 ####################
 def draw_bar(news_type,news_num,draw_mode):  #畫圖
@@ -232,37 +272,31 @@ while Mode == 1 or Mode == 2 or Mode == 3:
         url_2 = "&page="
 
         end_page = int(find_end_page_number())
-
+        if end_page == 0:
+            end_page = 1 #若搜尋結果只有一頁，不會顯示下方頁碼標籤，因此找不到，故為預設值0
+        
         # 執行爬蟲
-        headlines = web_crawler_for_BBCNews_headlines()  
+        headlines = []
+        web_crawler_for_BBCNews_headlines(headlines)  #將標題存到headlines這個list
 
+        #################### 資料處理 ####################
         # 從爬回來的所有標題提煉單字
-        dataset = []
-        for entry in headlines:
-            word = word_tokenize(entry)
-            for i in word:
-                dataset.append(i)
+        all_separate_words = []
+        separate_word_in_headlines(all_separate_words)
 
         #移除stopwords
-        my_stopwords = stopwords.words('english')
-        newly_added_stopwords=["-",'?',':',',',"'s",".","!",";","/","'","What","The","&","How"]
-        for each_element in newly_added_stopwords:
-            my_stopwords.append(each_element)
-
-        dataset_clean = [word for word in dataset if not word in my_stopwords]
-        #print(dataset_clean)
+        all_separate_words_clean=remove_stopwords(all_separate_words)
+        #print(all_separate_words_clean) #for check
+        
         # 計算字出現頻率
         dictionary = {}
-        for i in dataset_clean:
+        for i in all_separate_words_clean:
             dictionary[i] = dictionary.get(i, 0) + 1
 
         # 排序
         list_dictionary = []
-        for i in dictionary:
-            e = (i, dictionary[i])
-            list_dictionary.append(e)
-        # 需要再恢復 print(list_dictionary)
-        list_dictionary.sort(reverse=True, key=lambda list_dictionary: list_dictionary[1])
+        list_dictionary = sort_with_frequency(list_dictionary,dictionary)
+        #################################################
 
         # 使用者輸入介面
         while 1:
@@ -287,51 +321,27 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                 draw_bar(x_axis_type,y_axis_num,draw_mode)
             if mode == 2:
                 # 計算出現頻率前十高的單詞的標準化出現頻率
-                total = len(list_dictionary)
-                frequency_total = 0
-                for i in range(total):
-                    frequency_total = frequency_total + int(list_dictionary[i][1])
-                avg = frequency_total / total
-                # sum of squares of deviations
-                sum_sqr_dev = 0
-                for i in range(total):
-                    sum_sqr_dev = sum_sqr_dev + (list_dictionary[i][1] - avg) ** 2
-                    # standard deviation
-                sd = (sum_sqr_dev / total) ** (0.5)
-                # 標準化頻率
-                standard_frequency = []  # 可由此變數擷取標準化資料
-                for i in range(10):
-                    standard_frequency.append(round((list_dictionary[i][1] - avg) / sd, 3))
-                    print("出現頻率第", str(i + 1), "高的標準化頻率:", standard_frequency[i], "\t", list_dictionary[i][0])
-
+                standard_frequency_top_10 = []  
+                for index_of_the_word in range(10):
+                    standard_frequency_top_10.append(get_standard_frequency(list_dictionary,index_of_the_word))
+                    print("出現頻率第", str(index_of_the_word+ 1), "高的標準化頻率:", standard_frequency_top_10[index_of_the_word], "\t", list_dictionary[index_of_the_word][0])
                 x_axis_type = []
                 y_axis_num = []
                 for i in range(0, 10, 1):
                     x_axis_type.append(list_dictionary[i][0])  # x軸字串
-                    y_axis_num.append(standard_frequency[i])  # y軸數據
+                    y_axis_num.append(standard_frequency_top_10[i])  # y軸數據
                 print(x_axis_type, y_axis_num)
                 draw_mode=2
                 draw_bar(x_axis_type,y_axis_num,draw_mode)
             if mode == 3:
                 # 計算任一單詞的標準化出現頻率
-                total = len(list_dictionary)
-                frequency_total = 0
-                for i in range(total):
-                    frequency_total = frequency_total + int(list_dictionary[i][1])
-                avg = frequency_total / total
-                # sum of squares of deviations
-                sum_sqr_dev = 0
-                for i in range(total):
-                    sum_sqr_dev = sum_sqr_dev + (list_dictionary[i][1] - avg) ** 2
-                    # standard deviation
-                sd = (sum_sqr_dev / total) ** (0.5)
-
                 flag = 0  # 用以跳出多層迴圈
+                total = len(list_dictionary)
                 while 1:
-                    word_interest = input("請輸入想搜尋的單詞：")
+                    word_interest = input("請輸入想搜尋的單詞,若想停止搜尋請輸入0000\n：")
                     for i in range(total):
                         if word_interest == str(list_dictionary[i][0]):
-                            sf_specific = list_dictionary[i][1]
+                            standard_frequency_of_specific_word=get_standard_frequency(list_dictionary,i)
                             flag = flag + 1
                             break
                         if word_interest == str(0000):
@@ -341,8 +351,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                         print("此單字並未出現在標題中")
                     if flag == 1:
                         break
-                sf_specific = round((sf_specific - avg) / sd, 3)
-                print("出現頻率的標準化頻率:", sf_specific)
+                print("出現頻率的標準化頻率:", standard_frequency_of_specific_word)
 
             print("")
             Mode=choose_mode()
