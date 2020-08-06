@@ -94,6 +94,17 @@ def mode1_animation(topic):
     plt.show()
 
 
+def drawbar(news_type,news_num): # 模式二畫圖
+    x_axis_label = news_type  # x軸標籤
+    y_axis_num = np.array(news_num)  # y軸數據
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.xlabel('種類', fontproperties=font, size=12)
+    plt.ylabel('新聞量', fontproperties=font, size=12)
+    plt.title('新聞量分析圖', fontproperties=font, size=14)
+    plt.bar(x=x_axis_label, height=y_axis_num,color='#084887',edgecolor="#FAB419",linewidth=2)
+    plt.show()
+
 def chinese_hour(url):  # 爬標題
     r = requests.get(url)
     if r.status_code == requests.codes.ok:
@@ -122,18 +133,7 @@ def new_rank():  # 排名
             if (taiwan[i] == a[j]) and (taiwan[i] not in label):
                 label.append(labels[j])
                 rank.append(j + 1)
-    taiwan_lab = label  # x軸標籤
-    lab_num = np.array(taiwan)  # y軸數據
-    plt.xlabel('種類', fontproperties=font, size=12)
-    plt.ylabel('新聞量', fontproperties=font, size=12)
-    plt.title('新聞量分析圖', fontproperties=font, size=14)
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.bar(x=taiwan_lab, height=lab_num,
-            color='#084887',
-            edgecolor="#FAB419",
-            linewidth=2)
-    plt.show()
+    drawbar(label,taiwan)
     return taiwan, label, rank
 
 
@@ -284,6 +284,16 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
         # 需要再恢復 print(list_dictionary)
         list_dictionary.sort(reverse=True, key=lambda list_dictionary: list_dictionary[1])
 
+        def draw_mode3_bar(news_type,news_num):  #畫圖
+            plt.xlabel('種類', fontproperties=font, size=12)
+            plt.ylabel('頻率', fontproperties=font, size=12)
+            plt.xticks(fontsize=6.5)
+            plt.yticks(fontsize=10)
+            plt.bar(x=news_type, height=news_num,
+                    color='#084887',
+                    edgecolor="#FAB419",
+                    linewidth=2)
+            plt.show()
         # 使用者輸入介面
         while 1:
             print("模式輸入", 1, "：觀看出現頻率大於等於輸入次數的單詞")
@@ -294,25 +304,17 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
                 # 秀出出現頻率大於等於輸入次數的單字
                 n = int(input("請輸入最小出現頻率："))
                 i = 0
-                taiwan_lab = []
-                lab_num = []
+                x_axis_type = []
+                y_axis_num = []
                 while 1:
                     if list_dictionary[i][1] < n:
                         break
                     print(list_dictionary[i][0], ":", list_dictionary[i][1], "次")
-                    taiwan_lab.append(list_dictionary[i][0])  # x軸字串
-                    lab_num.append(list_dictionary[i][1])
+                    x_axis_type.append(list_dictionary[i][0])  # x軸字串
+                    y_axis_num.append(list_dictionary[i][1])
                     i = i + 1
-                plt.xlabel('種類', fontproperties=font, size=12)
-                plt.ylabel('出現次數', fontproperties=font, size=12)
                 plt.title('觀看出現頻率圖', fontproperties=font, size=14)
-                plt.xticks(rotation=45,fontsize=10)
-                plt.yticks(fontsize=10)
-                plt.bar(x=taiwan_lab, height=lab_num,
-                        color='#084887',
-                        edgecolor="#FAB419",
-                        linewidth=2)
-                plt.show()
+                draw_mode3_bar(x_axis_type, y_axis_num)
             if mode == 2:
                 # 計算出現頻率前十高的單詞的標準化出現頻率
                 total = len(list_dictionary)
@@ -332,22 +334,14 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
                     standard_frequency.append(round((list_dictionary[i][1] - avg) / sd, 3))
                     print("出現頻率第", str(i + 1), "高的標準化頻率:", standard_frequency[i], "\t", list_dictionary[i][0])
 
-                taiwan_lab = []
-                lab_num = []
+                x_axis_type = []
+                y_axis_num = []
                 for i in range(0, 10, 1):
-                    taiwan_lab.append(list_dictionary[i][0])  # x軸字串
-                    lab_num.append(standard_frequency[i])  # y軸數據
-                print(taiwan_lab, lab_num)
-                plt.xlabel('種類', fontproperties=font, size=12)
-                plt.ylabel('頻率', fontproperties=font, size=12)
+                    x_axis_type.append(list_dictionary[i][0])  # x軸字串
+                    y_axis_num.append(standard_frequency[i])  # y軸數據
+                print(x_axis_type, y_axis_num)
                 plt.title('出現頻率前10高的標準化頻率', fontproperties=font, size=14)
-                plt.xticks(fontsize=6.5)
-                plt.yticks(fontsize=10)
-                plt.bar(x=taiwan_lab, height=lab_num,
-                        color='#084887',
-                        edgecolor="#FAB419",
-                        linewidth=2)
-                plt.show()
+                draw_mode3_bar(x_axis_type, y_axis_num)
             if mode == 3:
                 # 計算任一單詞的標準化出現頻率
                 total = len(list_dictionary)
