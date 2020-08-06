@@ -1,17 +1,21 @@
+#爬蟲套件
 from bs4 import BeautifulSoup 
 import re
 import requests
+#繪圖套件
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import MultipleLocator #用在y軸座標
-import copy
+from matplotlib import animation as animation #animation
+import numpy as np
+#自然語言處理套件 用以移除stopwords
 import nltk 
 from nltk.corpus import stopwords 
 nltk.download('punkt') 
 nltk.download("stopwords") 
 from nltk.tokenize import word_tokenize 
-from matplotlib import animation as animation #animation
-import numpy as np
+
+import copy
 
 font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  # 中文字體匯入
 #mode1各別主題每小時出現的新聞數量，_1代表英文版，_2代表中文版
