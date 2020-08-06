@@ -109,16 +109,17 @@ def drawbar(news_type,news_num):
     plt.bar(x=x_axis_label, height=y_axis_num,color='#084887',edgecolor="#FAB419",linewidth=2)
     plt.show()
 
-def chinese_hour(url):  # 爬標題
+#################### mode2爬標題 ####################
+def chinese_hour(url): 
     r = requests.get(url)
     if r.status_code == requests.codes.ok:
         soup = BeautifulSoup(r.text, 'html.parser')
         stories = soup.find_all('a', class_='DY5T1d')
     return len(stories)
 
-
-def new_rank():  # 排名
-    # 肺炎、香港、立法院、高雄市長補選、三倍券、體育、財經
+#################### mode2排名 ####################
+def new_rank():
+    # 順序為肺炎、香港、立法院、高雄市長補選、三倍券、體育、財經
     twu = ['https://news.google.com/search?q=%E8%82%BA%E7%82%8E%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E9%A6%99%E6%B8%AF%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
            'https://news.google.com/search?q=%E7%AB%8B%E6%B3%95%E9%99%A2%20when%3A1h&hl=zh-TW&gl=TW&ceid=TW%3Azh-Hant',
@@ -140,15 +141,16 @@ def new_rank():  # 排名
     drawbar(label,taiwan)
     return taiwan, label, rank
 
-
-def find_end_page_number():  # 找最後一頁的頁數
+#################### mode3找最後一頁的頁數 ####################
+def find_end_page_number(): 
     res = requests.get(url_1 + name + url_2 + "1")
     soup = BeautifulSoup(res.text, 'html.parser')
     for entry in soup.select('.css-1s4ayab-StyledListItem-PageButtonListItem.e4i2y2x3 div .css-16didf7-StyledButtonContent.e1b2sq420'):
         page_number = str(entry.text.strip()) #不斷將page_number替換掉，直到最後一頁(有些page number和最後一頁share同樣的tag和class name)
     return page_number
 
-def web_crawler_for_BBCNews_headlines():  # 爬標題
+#################### mode3爬標題 ####################
+def web_crawler_for_BBCNews_headlines():
     headlines = []
     i = 1
     while 1:
@@ -161,20 +163,15 @@ def web_crawler_for_BBCNews_headlines():  # 爬標題
             break
         i = i + 1
 
-while True:  # 防呆&確認模式
-    print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-    print('2. 猜測國內不同主題的新聞數量名次')
-    print('3. 分析新聞標題字詞出現程度')
-    print('-' * 100)
-    m = eval(input('請輸入想進入的模式:'))
-    if m == 1 or m == 2 or m == 3:
-        print('=' * 100, '\n')
+#################### 程式運行 ####################
+# 防呆&確認模式
+while True:  
+    Mode = choose_mode()
+    if Mode in [1, 2, 3]:
         break
-    else:
-        print('\n無此模式，請重新輸入')
-        print('=' * 100, '\n')
 
-while Mode == 1 or Mode == 2 or Mode == 3:  # 進入模式
+# 進入模式
+while Mode == 1 or Mode == 2 or Mode == 3:  
     if Mode == 1:
         print('歡迎進入模式1：觀看國內與國外對於相同主題的新聞數量差異\n')
         while True:
@@ -184,7 +181,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:  # 進入模式
             if topic_number in range(1,11):             #確定輸入的主題代碼正確
                 mode1_animation(topic[topic_number-1])  #畫出動畫
                 break                                   #跳出迴圈，重新詢問使用者
-            else:1
+            else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
         
         Mode=eval(input("\n繼續觀看其他主題請輸入1, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字: ")) 
