@@ -20,8 +20,16 @@ nltk.download('punkt')
 nltk.download("stopwords") 
 from nltk.tokenize import word_tokenize 
 
-#################### 中文字體匯入 ####################
-font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  
+def choose_mode(): #選模式
+    print(' 1. 觀看國內與國外對於相同主題的新聞數量差異','\n','2. 猜測國內不同主題的新聞數量名次','\n',
+            '3. 分析新聞標題字詞出現程度','\n','-' * 100)
+    Mode = eval(input('請輸入想進入的模式:'))
+    if Mode == 1 or Mode == 2 or Mode == 3:
+        print('=' * 100, '\n')
+    else:
+        print('\n無此模式，請重新輸入')
+        print('=' * 100, '\n')
+    return Mode
 
 #################### mode1各別主題每小時出現的新聞數量，_1代表英文版，_2代表中文版 ####################
 mode1_Dictionary = { 'time' : ['07/21','16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00','07/22,00:00','01:00','02:00','03:00',
@@ -149,6 +157,32 @@ def web_crawler_for_BBCNews_headlines():  # 爬標題
             break
         i = i + 1
 
+
+def plotdata(plt, data):  # 模式1畫圖-1
+    x = [p[0] for p in data]
+    y = [p[1] for p in data]
+    plt.style.use('bmh')
+    plt.yticks([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 120])
+    plt.xticks(rotation=80)
+    plt.xlim(0,24)
+    plt.ylim(0,104)
+    plt.xlabel('Time')
+    plt.ylabel('number of news')
+    plt.plot(x, y, '-o', color='b')
+
+def plotdata1(plt, data):  # 模式1畫圖-2
+    x = [p[0] for p in data]
+    y = [p[1] for p in data]
+    plt.style.use('bmh')
+    plt.yticks([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 120])
+    plt.xticks(rotation=80)
+    plt.xlim(0,24)
+    plt.ylim(0,104)
+    plt.xlabel('Time')
+    plt.ylabel('number of news')
+    plt.plot(x, y, '-o', color='r')
+
+
 while True:  # 防呆&確認模式
     print('1. 觀看國內與國外對於相同主題的新聞數量差異')
     print('2. 猜測國內不同主題的新聞數量名次')
@@ -174,15 +208,14 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
                 break                                   #跳出迴圈，重新詢問使用者
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
+        
+        Mode=eval(input("\n繼續觀看其他主題請輸入1, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字: ")) 
+        if Mode==1:
+            Mode==1      
+        else:
+            Mode=choose_mode()
 
-        print('-' * 100)
-        print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-        print('2. 猜測國內不同主題的新聞數量名次')
-        print('3. 分析新聞標題字詞出現程度')
-        m = eval(input('\n繼續觀看其他主題請輸入1, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-        if m == 1 or m == 2 or m == 3:
-            print('=' * 100)
-    elif m == 2:
+    elif Mode == 2:
         print('歡迎進入模式2：猜測國內不同主題的新聞數量名次\n')
         while True:
             print(
@@ -206,14 +239,13 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
 
-        print('-' * 100)
-        print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-        print('2. 猜測國內不同主題的新聞數量名次')
-        print('3. 分析新聞標題字詞出現程度')
-        m = eval(input('\n再挑戰一次輸入2, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-        if m == 1 or m == 2 or m == 3:
-            print('=' * 100)
-    elif m == 3:
+        Mode = eval(input('\n再挑戰一次輸入2, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
+        if Mode==2:
+            Mode==2
+        else:
+            Mode=choose_mode()
+
+    elif Mode == 3:
         print('歡迎進入模式3：分析新聞標題字詞出現程度')
         url_1 = "https://www.bbc.co.uk/search?q="
         name = input("請輸入關鍵字(如果超過一個字請用+號連接):")
@@ -348,12 +380,13 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
                 sf_specific = round((sf_specific - avg) / sd, 3)
                 print("出現頻率的標準化頻率:", sf_specific)
 
-            print('-' * 100)
-            print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-            print('2. 猜測國內不同主題的新聞數量名次')
-            print('3. 分析新聞標題字詞出現程度')
-            m = eval(input('\n再一次請輸入3, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-            if m == 3:
+            mode = eval(input('\n再一次請輸入3, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
+            if Mode==3:
+                Mode==3
+            else:
+                Mode=choose_mode()
+
+            if mode == 3:
                 print("")
                 k = eval(input("替換關鍵字請輸入0,不需要則輸入其他任意數字:"))
                 if k == 0:
