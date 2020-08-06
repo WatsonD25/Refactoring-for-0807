@@ -15,12 +15,10 @@ import numpy as np
 font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  # 中文字體匯入
 
 def choose_mode(): #選模式
-    print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-    print('2. 猜測國內不同主題的新聞數量名次')
-    print('3. 分析新聞標題字詞出現程度')
-    print('-' * 100)
+    print(' 1. 觀看國內與國外對於相同主題的新聞數量差異','\n','2. 猜測國內不同主題的新聞數量名次','\n',
+            '3. 分析新聞標題字詞出現程度','\n','-' * 100)
     Mode = eval(input('請輸入想進入的模式:'))
-    if Mode == 1 or mode == 2 or mode == 3:
+    if Mode == 1 or Mode == 2 or Mode == 3:
         print('=' * 100, '\n')
     else:
         print('\n無此模式，請重新輸入')
