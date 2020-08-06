@@ -27,10 +27,12 @@ font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')
 def choose_mode():
     while True: 
         print(' 1. 觀看國內與國外對於相同主題的新聞數量差異','\n','2. 猜測國內不同主題的新聞數量名次','\n',
-                '3. 分析新聞標題字詞出現程度','\n','-' * 100)
+                '3. 分析新聞標題字詞出現程度','\n','*****離開請輸入000*****\n','-' * 100)
         Mode = eval(input('請輸入想進入的模式:'))
         if Mode == 1 or Mode == 2 or Mode == 3:
             print('=' * 100, '\n')
+            break
+        elif Mode == 000:
             break
         else:
             print('\n無此模式，請重新輸入')
@@ -128,20 +130,7 @@ def new_rank():
             if (taiwan[i] == a[j]) and (taiwan[i] not in label):
                 label.append(labels[j])
                 rank.append(j + 1)
-    drawbar(label,taiwan)
     return taiwan, label, rank
-
-#################### mode2畫圖 ####################
-def drawbar(news_type,news_num): 
-    x_axis_label = news_type         # x軸標籤
-    y_axis_num = np.array(news_num)  # y軸數據
-    plt.xticks(fontsize=10)
-    plt.yticks(fontsize=10)
-    plt.xlabel('種類', fontproperties=font, size=12)
-    plt.ylabel('新聞量', fontproperties=font, size=12)
-    plt.title('新聞量分析圖', fontproperties=font, size=14)
-    plt.bar(x=x_axis_label, height=y_axis_num,color='#084887',edgecolor="#FAB419",linewidth=2)
-    plt.show()
 
 #################### mode3找最後一頁的頁數 ####################
 def find_end_page_number(): 
@@ -166,10 +155,13 @@ def web_crawler_for_BBCNews_headlines():
         i = i + 1
     return headlines
 
-#################### mode3畫圖 ####################
-def draw_mode3_bar(news_type,news_num):  #畫圖
+#################### mode2跟mode3畫圖 ####################
+def draw_bar(news_type,news_num,draw_mode):  #畫圖
+            label_y=['新聞量', '頻率', '頻率']
+            title=['新聞量分析圖', '觀看出現頻率圖', '出現頻率前10高的標準化頻率']
             plt.xlabel('種類', fontproperties=font, size=12)
-            plt.ylabel('頻率', fontproperties=font, size=12)
+            plt.ylabel('%s'%label_y[draw_mode], fontproperties=font, size=12)
+            plt.title('%s'%title[draw_mode], fontproperties=font, size=14)
             plt.xticks(fontsize=6.5)
             plt.yticks(fontsize=10)
             plt.bar(x=news_type, height=news_num,
@@ -182,7 +174,7 @@ def draw_mode3_bar(news_type,news_num):  #畫圖
 # 防呆&確認模式
 while True:  
     Mode = choose_mode()
-    if Mode in [1, 2, 3]:
+    if Mode in [1, 2, 3, 000]:
         break
 
 # 進入模式
@@ -224,6 +216,8 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                     elif choose == rank[i] and i < 7:
                         print('\n不優！沒事多看看新聞吧！Σ( ° △ °|||)\n')
                         break
+                draw_mode=0
+                draw_bar(label,taiwan,draw_mode)
                 print("")
                 break
             else:
@@ -290,8 +284,8 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                     x_axis_type.append(list_dictionary[i][0])  # x軸字串
                     y_axis_num.append(list_dictionary[i][1])
                     i = i + 1
-                plt.title('觀看出現頻率圖', fontproperties=font, size=14)
-                draw_mode3_bar(x_axis_type, y_axis_num)
+                draw_mode=1
+                draw_bar(label,taiwan,draw_mode)
             if mode == 2:
                 # 計算出現頻率前十高的單詞的標準化出現頻率
                 total = len(list_dictionary)
@@ -317,8 +311,8 @@ while Mode == 1 or Mode == 2 or Mode == 3:
                     x_axis_type.append(list_dictionary[i][0])  # x軸字串
                     y_axis_num.append(standard_frequency[i])  # y軸數據
                 print(x_axis_type, y_axis_num)
-                plt.title('出現頻率前10高的標準化頻率', fontproperties=font, size=14)
-                draw_mode3_bar(x_axis_type, y_axis_num)
+                draw_mode=2
+                draw_bar(label,taiwan,draw_mode)
             if mode == 3:
                 # 計算任一單詞的標準化出現頻率
                 total = len(list_dictionary)
@@ -353,7 +347,7 @@ while Mode == 1 or Mode == 2 or Mode == 3:
 
             Mode=choose_mode()
 
-            if mode == 3:
+            if mode in [1, 2, 3]:
                 print("")
                 k = eval(input("替換關鍵字請輸入0,不需要則輸入其他任意數字:"))
                 if k == 0:
