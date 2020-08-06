@@ -14,10 +14,22 @@ import numpy as np
 
 font = FontProperties(fname=r'./GenYoGothicTW-Regular.ttf')  # 中文字體匯入
 
+def choose_mode(): #選模式
+    print('1. 觀看國內與國外對於相同主題的新聞數量差異')
+    print('2. 猜測國內不同主題的新聞數量名次')
+    print('3. 分析新聞標題字詞出現程度')
+    print('-' * 100)
+    Mode = eval(input('請輸入想進入的模式:'))
+    if Mode == 1 or mode == 2 or mode == 3:
+        print('=' * 100, '\n')
+    else:
+        print('\n無此模式，請重新輸入')
+        print('=' * 100, '\n')
+    return Mode
 
 def chinese_hour(url):  # 爬標題
     r = requests.get(url)
-    if r.status_code == requests.codes:
+    if r.status_code == requests.codes.ok:
         soup = BeautifulSoup(r.text, 'html.parser')
         stories = soup.find_all('a', class_='DY5T1d')
     return len(stories)
@@ -104,22 +116,10 @@ def plotdata1(plt, data):  # 模式1畫圖-2
     plt.ylabel('number of news')
     plt.plot(x, y, '-o', color='r')
 
+Mode=choose_mode()
 
-while True:  # 防呆&確認模式
-    print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-    print('2. 猜測國內不同主題的新聞數量名次')
-    print('3. 分析新聞標題字詞出現程度')
-    print('-' * 100)
-    m = eval(input('請輸入想進入的模式:'))
-    if m == 1 or m == 2 or m == 3:
-        print('=' * 100, '\n')
-        break
-    else:
-        print('\n無此模式，請重新輸入')
-        print('=' * 100, '\n')
-
-while m == 1 or m == 2 or m == 3:  # 進入模式
-    if m == 1:
+while Mode == 1 or Mode == 2 or Mode == 3:  # 進入模式
+    if Mode == 1:
         print('歡迎進入模式1：觀看國內與國外對於相同主題的新聞數量差異\n')
         while True:
             print(
@@ -416,15 +416,14 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
                 break
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
+        
+        Mode=eval(input("\n繼續觀看其他主題請輸入1, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字: ")) 
+        if Mode==1:
+            Mode==1      
+        else:
+            Mode=choose_mode()
 
-        print('-' * 100)
-        print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-        print('2. 猜測國內不同主題的新聞數量名次')
-        print('3. 分析新聞標題字詞出現程度')
-        m = eval(input('\n繼續觀看其他主題請輸入1, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-        if m == 1 or m == 2 or m == 3:
-            print('=' * 100)
-    elif m == 2:
+    elif Mode == 2:
         print('歡迎進入模式2：猜測國內不同主題的新聞數量名次\n')
         while True:
             print(
@@ -448,14 +447,13 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
             else:
                 print('錯誤輸入！', '\n', '-' * 100, '\n')
 
-        print('-' * 100)
-        print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-        print('2. 猜測國內不同主題的新聞數量名次')
-        print('3. 分析新聞標題字詞出現程度')
-        m = eval(input('\n再挑戰一次輸入2, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-        if m == 1 or m == 2 or m == 3:
-            print('=' * 100)
-    elif m == 3:
+        Mode = eval(input('\n再挑戰一次輸入2, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
+        if Mode==2:
+            Mode==2
+        else:
+            Mode=choose_mode()
+
+    elif Mode == 3:
         print('歡迎進入模式3：分析新聞標題字詞出現程度')
         url_1 = "https://www.bbc.co.uk/search?q="
         name = input("請輸入關鍵字(如果超過一個字請用+號連接):")
@@ -598,12 +596,13 @@ while m == 1 or m == 2 or m == 3:  # 進入模式
                 sf_specific = round((sf_specific - avg) / sd, 3)
                 print("出現頻率的標準化頻率:", sf_specific)
 
-            print('-' * 100)
-            print('1. 觀看國內與國外對於相同主題的新聞數量差異')
-            print('2. 猜測國內不同主題的新聞數量名次')
-            print('3. 分析新聞標題字詞出現程度')
-            m = eval(input('\n再一次請輸入3, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
-            if m == 3:
+            mode = eval(input('\n再一次請輸入3, 前往其他模式請輸入該模式代碼, 離開請輸入其他任意數字:'))
+            if Mode==3:
+                Mode==3
+            else:
+                Mode=choose_mode()
+
+            if mode == 3:
                 print("")
                 k = eval(input("替換關鍵字請輸入0,不需要則輸入其他任意數字:"))
                 if k == 0:
