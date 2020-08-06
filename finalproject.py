@@ -192,6 +192,8 @@ def get_standard_frequency(list_dictionary,index_of_the_word):
     # 標準化頻率
     index_of_the_word=int(index_of_the_word)
     standard_frequency=round((list_dictionary[index_of_the_word][1] - average) / sd, 3)
+    if sd==0:
+        standard_frequency=0
     return standard_frequency
 
 #################### mode2跟mode3畫圖 ####################
